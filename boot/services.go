@@ -6,13 +6,13 @@ import (
 	"gitlab.com/ricardo134/link-service/internal/core/app"
 	"log"
 
-	"gitlab.com/ricardo134/link-service/internal/driven/db/cockroachdb"
+	"gitlab.com/ricardo134/link-service/internal/driven/db/postgresql"
 	"gitlab.com/ricardo134/link-service/internal/driving/async"
 	ricardoNats "gitlab.com/ricardo134/link-service/internal/driving/async/nats"
 )
 
 var (
-	inviteService app.InviteService
+	inviteService app.LinkService
 
 	natsEncConn  *nats.EncodedConn
 	asyncHandler async.Handler
@@ -25,7 +25,7 @@ func LoadServices() {
 	}
 	natsEncConn, err = nats.NewEncodedConn(natsConn, nats.JSON_ENCODER)
 
-	inviteRepo := cockroachdb.NewInviteRepository(client)
+	inviteRepo := postgresql.NewInviteRepository(client)
 	inviteService = app.NewInviteService(inviteRepo)
 
 	asyncHandler = ricardoNats.NewNatsInviteHandler(inviteService)

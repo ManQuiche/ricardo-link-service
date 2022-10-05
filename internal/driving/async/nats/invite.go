@@ -7,10 +7,10 @@ import (
 )
 
 type natsHandler struct {
-	inviteService app.InviteService
+	inviteService app.LinkService
 }
 
-func NewNatsInviteHandler(inviteSvc app.InviteService) async.Handler {
+func NewNatsInviteHandler(inviteSvc app.LinkService) async.Handler {
 	return natsHandler{inviteSvc}
 }
 

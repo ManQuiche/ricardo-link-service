@@ -1,4 +1,4 @@
-package cockroachdb
+package postgresql
 
 import (
 	"context"
@@ -11,12 +11,12 @@ type inviteRepository struct {
 	client *gorm.DB
 }
 
-func NewInviteRepository(client *gorm.DB) ports.InviteRepository {
+func NewInviteRepository(client *gorm.DB) ports.LinkRepository {
 	return inviteRepository{client: client}
 }
 
-func (p inviteRepository) Get(ctx context.Context, inviteID uint) (*entities.Invite, error) {
-	var invite entities.Invite
+func (p inviteRepository) Get(ctx context.Context, inviteID uint) (*entities.Link, error) {
+	var invite entities.Link
 	err := p.client.First(&invite, inviteID).Error
 	if err != nil {
 		return nil, notFoundOrElseError(err)
@@ -25,8 +25,8 @@ func (p inviteRepository) Get(ctx context.Context, inviteID uint) (*entities.Inv
 	return &invite, nil
 }
 
-func (p inviteRepository) GetAllForUser(ctx context.Context, userID uint) ([]entities.Invite, error) {
-	var invites []entities.Invite
+func (p inviteRepository) GetAllForUser(ctx context.Context, userID uint) ([]entities.Link, error) {
+	var invites []entities.Link
 	err := p.client.Where("user_id = ?", userID).Find(&invites).Error
 	if err != nil {
 		return nil, notFoundOrElseError(err)
@@ -35,8 +35,8 @@ func (p inviteRepository) GetAllForUser(ctx context.Context, userID uint) ([]ent
 	return invites, nil
 }
 
-func (p inviteRepository) GetAllForParty(ctx context.Context, partyID uint) ([]entities.Invite, error) {
-	var invites []entities.Invite
+func (p inviteRepository) GetAllForParty(ctx context.Context, partyID uint) ([]entities.Link, error) {
+	var invites []entities.Link
 	err := p.client.Where("party_id = ?", partyID).Find(&invites).Error
 	if err != nil {
 		return nil, notFoundOrElseError(err)
@@ -45,8 +45,8 @@ func (p inviteRepository) GetAllForParty(ctx context.Context, partyID uint) ([]e
 	return invites, nil
 }
 
-func (p inviteRepository) GetAll(ctx context.Context) ([]entities.Invite, error) {
-	var invites []entities.Invite
+func (p inviteRepository) GetAll(ctx context.Context) ([]entities.Link, error) {
+	var invites []entities.Link
 	err := p.client.Find(&invites).Error
 	if err != nil {
 		return nil, notFoundOrElseError(err)
@@ -55,7 +55,7 @@ func (p inviteRepository) GetAll(ctx context.Context) ([]entities.Invite, error)
 	return invites, nil
 }
 
-func (p inviteRepository) Save(ctx context.Context, invite entities.Invite) (*entities.Invite, error) {
+func (p inviteRepository) Save(ctx context.Context, invite entities.Link) (*entities.Link, error) {
 	err := p.client.Save(&invite).Error
 
 	if err != nil {
@@ -66,7 +66,7 @@ func (p inviteRepository) Save(ctx context.Context, invite entities.Invite) (*en
 }
 
 func (p inviteRepository) Delete(ctx context.Context, inviteID uint) error {
-	err := p.client.Delete(&entities.Invite{}, inviteID).Error
+	err := p.client.Delete(&entities.Link{}, inviteID).Error
 	if err != nil {
 		return notFoundOrElseError(err)
 	}
@@ -75,7 +75,7 @@ func (p inviteRepository) Delete(ctx context.Context, inviteID uint) error {
 }
 
 func (p inviteRepository) DeleteForUser(ctx context.Context, userID uint) error {
-	err := p.client.Where("user_id = ?", userID).Delete(&entities.Invite{}).Error
+	err := p.client.Where("user_id = ?", userID).Delete(&entities.Link{}).Error
 	if err != nil {
 		return notFoundOrElseError(err)
 	}
@@ -84,7 +84,7 @@ func (p inviteRepository) DeleteForUser(ctx context.Context, userID uint) error 
 }
 
 func (p inviteRepository) DeleteForParty(ctx context.Context, partyID uint) error {
-	err := p.client.Where("party_id = ?", partyID).Delete(&entities.Invite{}).Error
+	err := p.client.Where("party_id = ?", partyID).Delete(&entities.Link{}).Error
 	if err != nil {
 		return notFoundOrElseError(err)
 	}

@@ -23,23 +23,23 @@ type Controller interface {
 }
 
 type controller struct {
-	service      app.InviteService
+	service      app.LinkService
 	accessSecret []byte
 }
 
-func NewController(service app.InviteService, accessSecret []byte) Controller {
+func NewController(service app.LinkService, accessSecret []byte) Controller {
 	return controller{service: service, accessSecret: accessSecret}
 }
 
 func (c controller) Create(gtx *gin.Context) {
-	var cir entities.CreateInviteRequest
+	var cir entities.CreateLinkRequest
 	err := gtx.ShouldBindJSON(&cir)
 	if err != nil {
 		_ = ricardoErr.GinErrorHandler(gtx, ricardoErr.New(ricardoErr.ErrBadRequest, err.Error()))
 		return
 	}
 
-	i := entities.Invite{
+	i := entities.Link{
 		PartyID: cir.PartyID,
 		UserID:  cir.UserID,
 	}
@@ -65,7 +65,7 @@ func (c controller) Update(gtx *gin.Context) {
 		return
 	}
 
-	i := entities.Invite{
+	i := entities.Link{
 		Model: gorm.Model{
 			ID: uir.ID,
 		},

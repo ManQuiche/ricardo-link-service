@@ -33,7 +33,7 @@ func LoadDb() {
 		errors.CannotConnectToDb(dbHost, dbPort)
 	}
 
-	err = client.AutoMigrate(&entities.Invite{})
+	err = client.AutoMigrate(&entities.Link{})
 	if err != nil {
 		log.Fatal("could not migrate db, exiting...")
 	}
