@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	tokens "gitlab.com/ricardo-public/jwt-tools/pkg"
-	"gitlab.com/ricardo134/link-service/internal/driving/http/invite"
+	"gitlab.com/ricardo134/link-service/internal/driving/http/link"
 	"log"
 	"net/http"
 )
@@ -19,16 +19,21 @@ func initRoutes() {
 		context.Status(http.StatusOK)
 	})
 
-	inviteController := invite.NewController(inviteService, []byte(accessSecret))
+	linkController := link.NewController(linkService, []byte(accessSecret))
 	tokenMiddleware := tokens.NewJwtAuthMiddleware([]byte(accessSecret))
 
-	partyGroup := router.Group("/invites")
-	partyGroup.GET("", tokenMiddleware.Authorize, inviteController.Get)
-	partyGroup.GET("/user/:user_id", tokenMiddleware.Authorize, inviteController.GetAllForUser)
-	partyGroup.GET("/party/:party_id", tokenMiddleware.Authorize, inviteController.GetOne)
-	partyGroup.POST("", tokenMiddleware.Authorize, inviteController.Create)
-	partyGroup.PATCH("", tokenMiddleware.Authorize, inviteController.Update)
-	partyGroup.DELETE("", tokenMiddleware.Authorize, inviteController.Delete)
+	linkGroup := router.Group("/link")
+	linkGroup.GET("/:link", tokenMiddleware.Authorize, linkController.GetOne)
+	linkGroup.GET("/party/:party_id", tokenMiddleware.Authorize, linkController.GetAllForParty)
+	linkGroup.POST("", tokenMiddleware.Authorize, linkController.Create)
+	linkGroup.PATCH("/:link", tokenMiddleware.Authorize, linkController.Update)
+	linkGroup.DELETE("/:link", tokenMiddleware.Authorize, linkController.Delete)
+
+	joinGroup := router.Group("/join")
+	joinGroup.POST("/:link", tokenMiddleware.Authorize, func(context *gin.Context) {
+		// TODO: add logic for joining a party
+		panic("implement me")
+	})
 }
 
 func ServeHTTP() {

@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	inviteService app.LinkService
+	linkService app.LinkService
 
 	natsEncConn  *nats.EncodedConn
 	asyncHandler async.Handler
@@ -25,8 +25,8 @@ func LoadServices() {
 	}
 	natsEncConn, err = nats.NewEncodedConn(natsConn, nats.JSON_ENCODER)
 
-	inviteRepo := postgresql.NewInviteRepository(client)
-	inviteService = app.NewInviteService(inviteRepo)
+	linkRepo := postgresql.NewInviteRepository(client)
+	linkService = app.NewLinkService(linkRepo)
 
-	asyncHandler = ricardoNats.NewNatsInviteHandler(inviteService)
+	asyncHandler = ricardoNats.NewNatsInviteHandler(linkService)
 }

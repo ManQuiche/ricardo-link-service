@@ -21,8 +21,9 @@ var (
 	natsURL          string
 	natsUsr          string
 	natsPwd          string
-	natsUserDeleted  string
 	natsPartyDeleted string
+
+	linkSecret string
 
 	debug bool
 )
@@ -43,8 +44,9 @@ func LoadEnv() {
 	natsURL = env("NATS_URL")
 	natsUsr = env("NATS_USR")
 	natsPwd = env("NATS_PWD")
-	natsUserDeleted = env("NATS_USER_DELETED")
-	natsUserDeleted = env("NATS_PARTY_DELETED")
+	natsPartyDeleted = env("NATS_PARTY_DELETED")
+
+	linkSecret = env("LINK_SECRET")
 }
 
 func envBool(name string) bool {

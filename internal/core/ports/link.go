@@ -19,7 +19,7 @@ type LinkService interface {
 //	GetAllForUser(ctx context.Context, userID uint) ([]entities.Link, error)
 //	GetAllForParty(ctx context.Context, partyID uint) ([]entities.Link, error)
 //	GetAll(ctx context.Context) ([]entities.Link, error)
-//	Save(ctx context.Context, invite entities.Link) (*entities.Link, error)
+//	Save(ctx context.Context, link entities.Link) (*entities.Link, error)
 //	Delete(ctx context.Context, inviteID uint) error
 //}
 

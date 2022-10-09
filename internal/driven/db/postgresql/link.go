@@ -25,16 +25,6 @@ func (p inviteRepository) Get(ctx context.Context, inviteID uint) (*entities.Lin
 	return &invite, nil
 }
 
-func (p inviteRepository) GetAllForUser(ctx context.Context, userID uint) ([]entities.Link, error) {
-	var invites []entities.Link
-	err := p.client.Where("user_id = ?", userID).Find(&invites).Error
-	if err != nil {
-		return nil, notFoundOrElseError(err)
-	}
-
-	return invites, nil
-}
-
 func (p inviteRepository) GetAllForParty(ctx context.Context, partyID uint) ([]entities.Link, error) {
 	var invites []entities.Link
 	err := p.client.Where("party_id = ?", partyID).Find(&invites).Error
@@ -67,15 +57,6 @@ func (p inviteRepository) Save(ctx context.Context, invite entities.Link) (*enti
 
 func (p inviteRepository) Delete(ctx context.Context, inviteID uint) error {
 	err := p.client.Delete(&entities.Link{}, inviteID).Error
-	if err != nil {
-		return notFoundOrElseError(err)
-	}
-
-	return nil
-}
-
-func (p inviteRepository) DeleteForUser(ctx context.Context, userID uint) error {
-	err := p.client.Where("user_id = ?", userID).Delete(&entities.Link{}).Error
 	if err != nil {
 		return notFoundOrElseError(err)
 	}
