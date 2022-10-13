@@ -15,6 +15,11 @@ type Link struct {
 	DeletedAt  gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }
 
+type MagicLink struct {
+	Link
+	MagicLink string `json:"magic_link"`
+}
+
 type CreateLinkRequest struct {
 	PartyID    uint       `json:"party_id" binding:"required"`
 	Expiration *time.Time `json:"expiration,omitempty"`
