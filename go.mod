@@ -6,6 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/lib/pq v1.10.7
 	github.com/nats-io/nats.go v1.17.0
+	github.com/pkg/errors v0.8.1
 	gitlab.com/ricardo-public/errors v1.0.4
 	gitlab.com/ricardo-public/jwt-tools v1.1.3
 	gorm.io/driver/postgres v1.3.10

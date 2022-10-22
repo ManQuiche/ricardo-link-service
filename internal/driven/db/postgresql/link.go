@@ -72,3 +72,12 @@ func (p inviteRepository) DeleteForParty(ctx context.Context, partyID uint) erro
 
 	return nil
 }
+
+func (p inviteRepository) DeleteForUser(ctx context.Context, userID uint) error {
+	err := p.client.Where("creator_id = ?", userID).Delete(&entities.Link{}).Error
+	if err != nil {
+		return notFoundOrElseError(err)
+	}
+
+	return nil
+}

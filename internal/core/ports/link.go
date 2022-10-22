@@ -12,7 +12,8 @@ type LinkService interface {
 	Save(ctx context.Context, Link entities.Link) (*entities.MagicLink, error)
 	Delete(ctx context.Context, LinkID uint) error
 	DeleteForParty(ctx context.Context, partyID uint) error
-	toMagic(link entities.Link) (entities.MagicLink, error)
+	DeleteForUser(ctx context.Context, userID uint) error
+	IsValid(ctx context.Context, m entities.MagicLink) (bool, error)
 }
 
 //type LinkRepository interface {
@@ -31,4 +32,5 @@ type LinkRepository interface {
 	Save(ctx context.Context, Link entities.Link) (*entities.Link, error)
 	Delete(ctx context.Context, LinkID uint) error
 	DeleteForParty(ctx context.Context, partyID uint) error
+	DeleteForUser(ctx context.Context, userID uint) error
 }

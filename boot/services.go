@@ -28,5 +28,5 @@ func LoadServices() {
 	linkRepo := postgresql.NewInviteRepository(client)
 	linkService = app.NewLinkService(linkRepo)
 
-	asyncHandler = ricardoNats.NewNatsInviteHandler(linkService)
+	asyncHandler = ricardoNats.NewNatsLinkHandler(linkService)
 }

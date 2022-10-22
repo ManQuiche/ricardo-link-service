@@ -7,17 +7,17 @@ import (
 )
 
 type natsHandler struct {
-	inviteService app.LinkService
+	linkService app.LinkService
 }
 
-func NewNatsInviteHandler(inviteSvc app.LinkService) async.Handler {
+func NewNatsLinkHandler(inviteSvc app.LinkService) async.Handler {
 	return natsHandler{inviteSvc}
 }
 
 func (nh natsHandler) OnUserDelete(userID uint) {
-	_ = nh.inviteService.DeleteForUser(context.Background(), userID)
+	_ = nh.linkService.DeleteForUser(context.Background(), userID)
 }
 
 func (nh natsHandler) OnPartyDelete(partyID uint) {
-	_ = nh.inviteService.DeleteForParty(context.Background(), partyID)
+	_ = nh.linkService.DeleteForParty(context.Background(), partyID)
 }

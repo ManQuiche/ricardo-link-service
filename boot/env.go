@@ -22,6 +22,7 @@ var (
 	natsUsr          string
 	natsPwd          string
 	natsPartyDeleted string
+	natsUserDeleted  string
 
 	linkSecret string
 
@@ -45,6 +46,7 @@ func LoadEnv() {
 	natsUsr = env("NATS_USR")
 	natsPwd = env("NATS_PWD")
 	natsPartyDeleted = env("NATS_PARTY_DELETED")
+	natsPartyDeleted = env("NATS_USER_DELETED")
 
 	linkSecret = env("LINK_SECRET")
 }
