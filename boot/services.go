@@ -26,7 +26,7 @@ func LoadServices() {
 	natsEncConn, err = nats.NewEncodedConn(natsConn, nats.JSON_ENCODER)
 
 	linkRepo := postgresql.NewInviteRepository(client)
-	linkService = app.NewLinkService(linkRepo)
+	linkService = app.NewLinkService(linkRepo, []byte(""))
 
 	asyncHandler = ricardoNats.NewNatsLinkHandler(linkService)
 }

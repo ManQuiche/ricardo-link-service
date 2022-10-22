@@ -50,13 +50,13 @@ func (c controller) Create(gtx *gin.Context) {
 		PartyID:    cir.PartyID,
 		Expiration: cir.Expiration,
 	}
-	link, err := c.service.Save(gtx.Request.Context(), i)
+	magicLink, err := c.service.Save(gtx.Request.Context(), i)
 	if err != nil {
 		_ = errorsext.GinErrorHandler(gtx, err)
 		return
 	}
 
-	gtx.JSON(http.StatusOK, link)
+	gtx.JSON(http.StatusOK, magicLink)
 }
 
 // Update
@@ -69,7 +69,7 @@ func (c controller) Create(gtx *gin.Context) {
 // @Failure 404 {object} errorsext.RicardoError
 // @Router /link/{link_id} [PATCH]
 func (c controller) Update(gtx *gin.Context) {
-	linkID, err := strconv.ParseUint(gtx.Param("linkID"), 10, 32)
+	linkID, err := strconv.ParseUint(gtx.Param("link_id"), 10, 64)
 	if err != nil {
 		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, "invalid ID format"))
 		return
@@ -175,7 +175,7 @@ func (c controller) GetOne(gtx *gin.Context) {
 // @Failure 404 {object} errorsext.RicardoError
 // @Router /link/{link_id} [DELETE]
 func (c controller) Delete(gtx *gin.Context) {
-	linkID, err := strconv.ParseUint(gtx.Param("linkID"), 10, 32)
+	linkID, err := strconv.ParseUint(gtx.Param("link_id"), 10, 64)
 	if err != nil {
 		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, "invalid ID format"))
 		return

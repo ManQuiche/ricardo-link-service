@@ -23,17 +23,14 @@ func initRoutes() {
 	tokenMiddleware := tokens.NewJwtAuthMiddleware([]byte(accessSecret))
 
 	linkGroup := router.Group("/link")
-	linkGroup.GET("/:link", tokenMiddleware.Authorize, linkController.GetOne)
+	linkGroup.GET("/:link_id", tokenMiddleware.Authorize, linkController.GetOne)
 	linkGroup.GET("/party/:party_id", tokenMiddleware.Authorize, linkController.GetAllForParty)
 	linkGroup.POST("", tokenMiddleware.Authorize, linkController.Create)
-	linkGroup.PATCH("/:link", tokenMiddleware.Authorize, linkController.Update)
-	linkGroup.DELETE("/:link", tokenMiddleware.Authorize, linkController.Delete)
+	linkGroup.PATCH("/:link_id", tokenMiddleware.Authorize, linkController.Update)
+	linkGroup.DELETE("/:link_id", tokenMiddleware.Authorize, linkController.Delete)
 
 	joinGroup := router.Group("/join")
-	joinGroup.POST("/:link", tokenMiddleware.Authorize, func(context *gin.Context) {
-		// TODO: add logic for joining a party
-		panic("implement me")
-	})
+	joinGroup.POST("/:link", tokenMiddleware.Authorize, linkController.Join)
 }
 
 func ServeHTTP() {
