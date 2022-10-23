@@ -18,11 +18,13 @@ var (
 	url          string
 	accessSecret string
 
-	natsURL          string
-	natsUsr          string
-	natsPwd          string
-	natsPartyDeleted string
-	natsUserDeleted  string
+	natsURL            string
+	natsUsr            string
+	natsPwd            string
+	natsUserDeleted    string
+	natsPartyDeleted   string
+	natsPartyRequested string
+	natsPartyJoined    string
 
 	linkSecret string
 
@@ -45,8 +47,10 @@ func LoadEnv() {
 	natsURL = env("NATS_URL")
 	natsUsr = env("NATS_USR")
 	natsPwd = env("NATS_PWD")
+	natsUserDeleted = env("NATS_USER_DELETED")
 	natsPartyDeleted = env("NATS_PARTY_DELETED")
-	natsPartyDeleted = env("NATS_USER_DELETED")
+	natsPartyRequested = env("NATS_PARTY_REQUESTED")
+	natsPartyJoined = env("NATS_USER_JOINED")
 
 	linkSecret = env("LINK_SECRET")
 }

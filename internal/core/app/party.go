@@ -10,13 +10,17 @@ type PartyService interface {
 }
 
 type partyService struct {
-	requestor ports.PartyRequestor
+	notifier ports.PartyNotifier
 }
 
-func NewPartyService(r ports.PartyRequestor) PartyService {
-	return partyService{r}
+func NewPartyService(n ports.PartyNotifier) PartyService {
+	return partyService{n}
 }
 
 func (p partyService) Request(ctx context.Context, partyID uint) (any, error) {
-	return p.requestor.Requested(ctx, partyID)
+	return p.notifier.Requested(ctx, partyID)
+}
+
+func (p partyService) Joined(ctx context.Context, partyID uint, userID uint) error {
+	return p.notifier.Joined(ctx, partyID, userID)
 }

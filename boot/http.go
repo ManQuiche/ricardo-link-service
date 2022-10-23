@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	tokens "gitlab.com/ricardo-public/jwt-tools/pkg"
 	"gitlab.com/ricardo134/link-service/internal/driving/http/link"
+	"gitlab.com/ricardo134/link-service/internal/driving/http/party"
 	"log"
 	"net/http"
 )
@@ -20,6 +21,7 @@ func initRoutes() {
 	})
 
 	linkController := link.NewController(linkService, []byte(accessSecret))
+	partyController := party.NewController(partyService)
 	tokenMiddleware := tokens.NewJwtAuthMiddleware([]byte(accessSecret))
 
 	linkGroup := router.Group("/link")
@@ -29,8 +31,8 @@ func initRoutes() {
 	linkGroup.PATCH("/:link_id", tokenMiddleware.Authorize, linkController.Update)
 	linkGroup.DELETE("/:link_id", tokenMiddleware.Authorize, linkController.Delete)
 
-	joinGroup := router.Group("/join")
-	joinGroup.POST("/:link", tokenMiddleware.Authorize, linkController.Join)
+	router.GET("/see/:link", partyController.See)
+	router.POST("/join/:link", tokenMiddleware.Authorize, partyController.Join)
 }
 
 func ServeHTTP() {

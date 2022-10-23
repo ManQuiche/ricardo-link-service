@@ -6,13 +6,15 @@ import (
 	"gitlab.com/ricardo134/link-service/internal/core/app"
 	"log"
 
+	natsextout "gitlab.com/ricardo134/link-service/internal/driven/async/nats"
 	"gitlab.com/ricardo134/link-service/internal/driven/db/postgresql"
 	"gitlab.com/ricardo134/link-service/internal/driving/async"
-	ricardoNats "gitlab.com/ricardo134/link-service/internal/driving/async/nats"
+	natsextin "gitlab.com/ricardo134/link-service/internal/driving/async/nats"
 )
 
 var (
-	linkService app.LinkService
+	linkService  app.LinkService
+	partyService app.PartyService
 
 	natsEncConn  *nats.EncodedConn
 	asyncHandler async.Handler
@@ -28,5 +30,8 @@ func LoadServices() {
 	linkRepo := postgresql.NewInviteRepository(client)
 	linkService = app.NewLinkService(linkRepo, []byte(""))
 
-	asyncHandler = ricardoNats.NewNatsLinkHandler(linkService)
+	partyNotifier := natsextout.NewPartyNotifier(natsEncConn, natsPartyRequested, natsPartyJoined)
+	partyService = app.NewPartyService(partyNotifier)
+
+	asyncHandler = natsextin.NewNatsLinkHandler(linkService)
 }
