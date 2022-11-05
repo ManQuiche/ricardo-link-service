@@ -28,7 +28,7 @@ func LoadServices() {
 	natsEncConn, err = nats.NewEncodedConn(natsConn, nats.JSON_ENCODER)
 
 	linkRepo := postgresql.NewInviteRepository(client)
-	linkService = app.NewLinkService(linkRepo, []byte(""))
+	linkService = app.NewLinkService(linkRepo, []byte(linkSecret))
 
 	partyNotifier := natsextout.NewPartyNotifier(natsEncConn, natsPartyRequested, natsPartyJoined)
 	partyService = app.NewPartyService(partyNotifier)
