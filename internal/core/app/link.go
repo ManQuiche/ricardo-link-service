@@ -1,11 +1,9 @@
 package app
 
 import (
-	"bytes"
 	"context"
-	"crypto/sha512"
-	"encoding/json"
-	"github.com/pkg/errors"
+	"errors"
+	"fmt"
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
 	"gitlab.com/ricardo134/link-service/internal/core/ports"
 )
@@ -49,7 +47,7 @@ func (p linkService) GetAllForParty(ctx context.Context, partyID uint) ([]entiti
 func (p linkService) Save(ctx context.Context, link entities.Link) (*entities.MagicLink, error) {
 	l, err := p.repo.Save(ctx, link)
 	if err != nil {
-		return nil, errors.Wrapf(err, "could not save link %d", link.ID)
+		return nil, errors.New(fmt.Sprintf("could not save link %d: %s", link.ID, err))
 	}
 
 	return p.toMagic(ctx, *l)
@@ -68,13 +66,7 @@ func (p linkService) DeleteForUser(ctx context.Context, userID uint) error {
 }
 
 func (p linkService) IsValid(ctx context.Context, m entities.MagicLink) (bool, error) {
-	jsonLink, err := json.Marshal(m.ShortLink)
-	if err != nil {
-		return false, errors.Wrapf(err, "could not marshal short link %d", m.ShortLink.ID)
-	}
-	digest := sha512.Sum512(append(jsonLink, p.secret...))
-
-	return bytes.Equal(digest[:], []byte(m.MagicLink)), nil
+	return m.IsValid(p.secret)
 }
 
 func (p linkService) toMagic(ctx context.Context, link entities.Link) (*entities.MagicLink, error) {
@@ -84,14 +76,10 @@ func (p linkService) toMagic(ctx context.Context, link entities.Link) (*entities
 		CreatorID: link.CreatorID,
 	}
 
-	jsonLink, err := json.Marshal(shortL)
+	magicLink, err := entities.NewMagicLink(shortL, p.secret)
 	if err != nil {
-		return nil, errors.Wrapf(err, "could not marshal short link %d", link.ID)
+		return nil, errors.New(fmt.Sprintf("toMagic: %s", err))
 	}
-	digest := sha512.Sum512(append(jsonLink, p.secret...))
 
-	return &entities.MagicLink{
-		ShortLink: shortL,
-		MagicLink: string(digest[:]),
-	}, nil
+	return &magicLink, nil
 }
