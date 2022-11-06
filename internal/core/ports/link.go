@@ -6,14 +6,16 @@ import (
 )
 
 type LinkService interface {
-	Get(ctx context.Context, inviteID uint) (*entities.MagicLink, error)
+	Get(ctx context.Context, inviteID uint) (*entities.Link, error)
+	GetMagic(ctx context.Context, inviteID uint) (*entities.MagicLink, error)
 	GetAllForParty(ctx context.Context, partyID uint) ([]entities.Link, error)
 	GetAll(ctx context.Context) ([]entities.Link, error)
-	Save(ctx context.Context, Link entities.Link) (*entities.MagicLink, error)
+	Save(ctx context.Context, Link entities.Link) (*entities.Link, error)
 	Delete(ctx context.Context, LinkID uint) error
 	DeleteForParty(ctx context.Context, partyID uint) error
 	DeleteForUser(ctx context.Context, userID uint) error
 	IsValid(ctx context.Context, m entities.MagicLink) (bool, error)
+	ToMagic(ctx context.Context, link entities.Link) (*entities.MagicLink, error)
 }
 
 //type LinkRepository interface {

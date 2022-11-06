@@ -2,15 +2,15 @@ package nats
 
 import (
 	"context"
-	"gitlab.com/ricardo134/link-service/internal/core/app"
+	"gitlab.com/ricardo134/link-service/internal/core/app/link"
 	"gitlab.com/ricardo134/link-service/internal/driving/async"
 )
 
 type natsHandler struct {
-	linkService app.LinkService
+	linkService link.Service
 }
 
-func NewNatsLinkHandler(inviteSvc app.LinkService) async.Handler {
+func NewNatsLinkHandler(inviteSvc link.Service) async.Handler {
 	return natsHandler{inviteSvc}
 }
 

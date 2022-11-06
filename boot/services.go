@@ -3,7 +3,8 @@ package boot
 import (
 	"fmt"
 	"github.com/nats-io/nats.go"
-	"gitlab.com/ricardo134/link-service/internal/core/app"
+	"gitlab.com/ricardo134/link-service/internal/core/app/link"
+	"gitlab.com/ricardo134/link-service/internal/core/app/party"
 	"log"
 
 	natsextout "gitlab.com/ricardo134/link-service/internal/driven/async/nats"
@@ -13,8 +14,8 @@ import (
 )
 
 var (
-	linkService  app.LinkService
-	partyService app.PartyService
+	linkService  link.Service
+	partyService party.PartyService
 
 	natsEncConn  *nats.EncodedConn
 	asyncHandler async.Handler
@@ -28,10 +29,10 @@ func LoadServices() {
 	natsEncConn, err = nats.NewEncodedConn(natsConn, nats.JSON_ENCODER)
 
 	linkRepo := postgresql.NewInviteRepository(client)
-	linkService = app.NewLinkService(linkRepo, []byte(linkSecret))
+	linkService = link.NewService(linkRepo, []byte(linkSecret))
 
 	partyNotifier := natsextout.NewPartyNotifier(natsEncConn, natsPartyRequested, natsPartyJoined)
-	partyService = app.NewPartyService(partyNotifier)
+	partyService = party.NewPartyService(partyNotifier)
 
 	asyncHandler = natsextin.NewNatsLinkHandler(linkService)
 }

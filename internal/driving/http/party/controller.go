@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	errorsext "gitlab.com/ricardo-public/errors/pkg/errors"
 	"gitlab.com/ricardo-public/jwt-tools/v2/pkg/token"
-	"gitlab.com/ricardo134/link-service/internal/core/app"
+	"gitlab.com/ricardo134/link-service/internal/core/app/party"
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
 	"net/http"
 	"strconv"
@@ -16,10 +16,10 @@ type Controller interface {
 }
 
 type controller struct {
-	service app.PartyService
+	service party.PartyService
 }
 
-func NewController(service app.PartyService) Controller {
+func NewController(service party.PartyService) Controller {
 	return controller{service: service}
 }
 

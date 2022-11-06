@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	errorsext "gitlab.com/ricardo-public/errors/pkg/errors"
 	tokens "gitlab.com/ricardo-public/jwt-tools/pkg"
-	"gitlab.com/ricardo134/link-service/internal/core/app"
+	"gitlab.com/ricardo134/link-service/internal/core/app/link"
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
 	"net/http"
 	"strconv"
@@ -21,11 +21,11 @@ type Controller interface {
 }
 
 type controller struct {
-	service      app.LinkService
+	service      link.Service
 	accessSecret []byte
 }
 
-func NewController(service app.LinkService, accessSecret []byte) Controller {
+func NewController(service link.Service, accessSecret []byte) Controller {
 	return controller{service: service, accessSecret: accessSecret}
 }
 
@@ -50,7 +50,13 @@ func (c controller) Create(gtx *gin.Context) {
 		PartyID:    cir.PartyID,
 		Expiration: cir.Expiration,
 	}
-	magicLink, err := c.service.Save(gtx.Request.Context(), i)
+	link, err := c.service.Save(gtx.Request.Context(), i)
+	if err != nil {
+		_ = errorsext.GinErrorHandler(gtx, err)
+		return
+	}
+
+	magicLink, err := c.service.ToMagic(gtx.Request.Context(), *link)
 	if err != nil {
 		_ = errorsext.GinErrorHandler(gtx, err)
 		return
@@ -88,12 +94,15 @@ func (c controller) Update(gtx *gin.Context) {
 		return
 	}
 
-	l := entities.Link{
-		ID:         uintLinkId,
-		Expiration: ulr.Expiration,
+	l, err := c.service.Get(gtx.Request.Context(), uint(linkID))
+	if err != nil {
+		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, ""))
+		return
 	}
 
-	link, err := c.service.Save(gtx.Request.Context(), l)
+	l.Expiration = ulr.Expiration
+
+	link, err := c.service.Save(gtx.Request.Context(), *l)
 	if err != nil {
 		_ = errorsext.GinErrorHandler(gtx, err)
 		return
