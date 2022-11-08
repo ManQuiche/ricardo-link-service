@@ -45,7 +45,7 @@ func LoadEnv() {
 	natsPwd = env("NATS_PWD")
 	natsPartyDeleted = env("NATS_PARTY_DELETED")
 	natsPartyRequested = env("NATS_PARTY_REQUESTED")
-	natsPartyJoined = env("NATS_USER_JOINED")
+	natsPartyJoined = env("NATS_PARTY_JOINED")
 
 	linkSecret = env("LINK_SECRET")
 

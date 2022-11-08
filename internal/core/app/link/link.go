@@ -13,14 +13,18 @@ type Service interface {
 }
 
 type service struct {
-	repo   ports.LinkRepository
-	secret []byte
+	repo       ports.LinkRepository
+	extlink    ports.ExternalLinkService
+	extlinkURL string
+	secret     []byte
 }
 
-func NewService(repo ports.LinkRepository, secret []byte) Service {
+func NewService(repo ports.LinkRepository, extlink ports.ExternalLinkService, extlinkURL string, secret []byte) Service {
 	return service{
-		repo:   repo,
-		secret: secret,
+		repo:       repo,
+		extlink:    extlink,
+		extlinkURL: extlinkURL,
+		secret:     secret,
 	}
 }
 

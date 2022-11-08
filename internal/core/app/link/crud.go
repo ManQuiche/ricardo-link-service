@@ -42,6 +42,16 @@ func (p service) Save(ctx context.Context, link entities.Link) (*entities.Link, 
 		return nil, errors.New(fmt.Sprintf("could not save link %d: %s", link.ID, err))
 	}
 
+	magicLink, err := p.ToMagic(ctx, link)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("could not convert to magic %d: %s", link.ID, err))
+	}
+
+	_, err = p.extlink.Create(ctx, magicLink.String(), l.ID)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("could not create ext link %d: %s", link.ID, err))
+	}
+
 	return l, nil
 }
 

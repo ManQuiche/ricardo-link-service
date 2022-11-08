@@ -2,51 +2,49 @@ package firebase
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
 	"gitlab.com/ricardo134/link-service/internal/core/ports"
 	"google.golang.org/api/firebasedynamiclinks/v1"
+	"gorm.io/gorm"
+	"net/http"
 )
+
+const provider = "firebase"
 
 type LinkService interface {
 	ports.ExternalLinkService
 }
 
 type linkService struct {
+	client        *gorm.DB
 	fbLinkService *firebasedynamiclinks.Service
 }
 
-func NewLinkService(fbLinkService *firebasedynamiclinks.Service) LinkService {
-	return linkService{fbLinkService}
+func NewLinkService(client *gorm.DB, fbLinkService *firebasedynamiclinks.Service) LinkService {
+	return linkService{client, fbLinkService}
 }
 
-func (l linkService) Create(ctx context.Context, link entities.Link) (entities.ExternalLink, error) {
+func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (entities.ExternalLink, error) {
 	call := l.fbLinkService.ShortLinks.Create(&firebasedynamiclinks.CreateShortDynamicLinkRequest{
-		DynamicLinkInfo: &firebasedynamiclinks.DynamicLinkInfo{
-			AnalyticsInfo:     nil,
-			AndroidInfo:       nil,
-			DesktopInfo:       nil,
-			DomainUriPrefix:   "",
-			DynamicLinkDomain: "",
-			IosInfo:           nil,
-			Link:              "",
-			NavigationInfo:    nil,
-			SocialMetaTagInfo: nil,
-			ForceSendFields:   nil,
-			NullFields:        nil,
-		},
-		LongDynamicLink: "",
-		SdkVersion:      "",
-		Suffix: &firebasedynamiclinks.Suffix{
-			CustomSuffix:    "",
-			Option:          "",
-			ForceSendFields: nil,
-			NullFields:      nil,
-		},
-		ForceSendFields: nil,
-		NullFields:      nil,
+		LongDynamicLink: linkStr,
 	})
 
-	return entities.ExternalLink{}, nil
+	res, err := call.Do()
+	if err != nil {
+		return entities.ExternalLink{},
+			errors.New(fmt.Sprintf("firebase dynamic link creation: %s", err))
+	}
+
+	if res.HTTPStatusCode == http.StatusOK {
+		extlink := &entities.ExternalLink{Provider: provider, URL: res.ShortLink, LinkID: linkID}
+		err = l.client.Create(extlink).Error
+		return *extlink, err
+	} else {
+		return entities.ExternalLink{},
+			errors.New(fmt.Sprintf("firebase dynamic link creation: %s", err))
+	}
 }
 
 func (l linkService) Delete(ctx context.Context, extLinkID uint) error {

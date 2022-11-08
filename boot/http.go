@@ -12,6 +12,8 @@ import (
 
 var (
 	router *gin.Engine
+
+	extLinkURL string
 )
 
 func initRoutes() {
@@ -41,6 +43,7 @@ func ServeHTTP() {
 	initRoutes()
 
 	appURL := fmt.Sprintf("%s:%s", url, port)
+	extLinkURL = fmt.Sprintf("%s/see/", appURL)
 	log.Printf("Launching server on %s...\n", appURL)
 
 	log.Fatalln(router.Run(appURL))

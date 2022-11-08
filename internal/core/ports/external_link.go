@@ -6,7 +6,7 @@ import (
 )
 
 type ExternalLinkService interface {
-	Create(ctx context.Context, link entities.Link) (entities.ExternalLink, error)
+	Create(ctx context.Context, linkStr string, linkID uint) (entities.ExternalLink, error)
 	Delete(ctx context.Context, extLinkID uint) error
 	DeleteForLinks(ctx context.Context, link entities.Link) error
 }

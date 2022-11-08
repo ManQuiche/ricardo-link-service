@@ -5,6 +5,7 @@ import (
 	"github.com/nats-io/nats.go"
 	"gitlab.com/ricardo134/link-service/internal/core/app/link"
 	"gitlab.com/ricardo134/link-service/internal/core/app/party"
+	firebase "gitlab.com/ricardo134/link-service/internal/driven/firebase/link"
 	"log"
 
 	natsextout "gitlab.com/ricardo134/link-service/internal/driven/async/nats"
@@ -29,7 +30,8 @@ func LoadServices() {
 	natsEncConn, err = nats.NewEncodedConn(natsConn, nats.JSON_ENCODER)
 
 	linkRepo := postgresql.NewInviteRepository(client)
-	linkService = link.NewService(linkRepo, []byte(linkSecret))
+	extLinkRepo := firebase.NewLinkService(client, fbLinkService)
+	linkService = link.NewService(linkRepo, extLinkRepo, extLinkURL, []byte(linkSecret))
 
 	partyNotifier := natsextout.NewPartyNotifier(natsEncConn, natsPartyRequested, natsPartyJoined)
 	partyService = party.NewPartyService(partyNotifier)
