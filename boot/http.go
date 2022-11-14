@@ -27,6 +27,7 @@ func initRoutes() {
 	tokenMiddleware := tokens.NewJwtAuthMiddleware([]byte(accessSecret))
 
 	linkGroup := router.Group("/link")
+	linkGroup.GET("", tokenMiddleware.Authorize, linkController.Get)
 	linkGroup.GET("/:link_id", tokenMiddleware.Authorize, linkController.GetOne)
 	linkGroup.GET("/party/:party_id", tokenMiddleware.Authorize, linkController.GetAllForParty)
 	linkGroup.POST("", tokenMiddleware.Authorize, linkController.Create)

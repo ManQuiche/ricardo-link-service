@@ -28,7 +28,7 @@ func LoadDb() {
 		errors.CannotConnectToDb(dbHost, dbPort)
 	}
 
-	err = client.AutoMigrate(&entities.Link{})
+	err = client.AutoMigrate(&entities.ExternalLink{})
 	if err != nil {
 		log.Fatal("could not migrate db, exiting...")
 	}

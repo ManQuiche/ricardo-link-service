@@ -1,8 +1,8 @@
 package entities
 
 import (
-	"bytes"
 	"crypto/sha512"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -42,7 +42,12 @@ func (m MagicLink) String() string {
 		return ""
 	}
 
-	return string(jsonL) + magicLinkSep + m.Signature
+	return fmt.Sprintf(
+		"%s%s%s",
+		base64.URLEncoding.EncodeToString(jsonL),
+		magicLinkSep,
+		m.Signature,
+	)
 }
 
 func NewMagicLink(shortL ShortLink, secret []byte) (MagicLink, error) {
@@ -54,12 +59,12 @@ func NewMagicLink(shortL ShortLink, secret []byte) (MagicLink, error) {
 
 	return MagicLink{
 		ShortLink: shortL,
-		Signature: string(digest[:]),
+		Signature: base64.URLEncoding.EncodeToString(digest[:]),
 	}, nil
 }
 
-func NewMagicLinkFromString(mLink string) (MagicLink, error) {
-	jsonShortL, sig, found := strings.Cut(mLink, magicLinkSep)
+func NewMagicLinkFromString(magicL string) (MagicLink, error) {
+	jsonShortL, sig, found := strings.Cut(magicL, magicLinkSep)
 	if !found {
 		return MagicLink{}, errors.New("could not decode magic link")
 	}
@@ -81,9 +86,11 @@ func (m MagicLink) IsValid(secret []byte) (bool, error) {
 	if err != nil {
 		return false, errors.New(fmt.Sprintf("could not marshal short link %d: %s", m.ShortLink.ID, err))
 	}
+
+	// TODO: just store the previously computed signature already...
 	digest := sha512.Sum512(append(jsonLink, secret...))
 
-	return bytes.Equal(digest[:], []byte(m.Signature)), nil
+	return base64.URLEncoding.EncodeToString(digest[:]) == m.Signature, nil
 }
 
 //func (m MagicLink) MarshalJSON() ([]byte, error) {
