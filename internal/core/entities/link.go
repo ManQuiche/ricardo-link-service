@@ -64,13 +64,18 @@ func NewMagicLink(shortL ShortLink, secret []byte) (MagicLink, error) {
 }
 
 func NewMagicLinkFromString(magicL string) (MagicLink, error) {
-	jsonShortL, sig, found := strings.Cut(magicL, magicLinkSep)
+	b64ShortL, sig, found := strings.Cut(magicL, magicLinkSep)
 	if !found {
 		return MagicLink{}, errors.New("could not decode magic link")
 	}
 
+	jsonShortL, err := base64.URLEncoding.DecodeString(b64ShortL)
+	if err != nil {
+		return MagicLink{}, errors.New("could not decode b64 short link")
+	}
+
 	var shortL ShortLink
-	err := json.Unmarshal([]byte(jsonShortL), &shortL)
+	err = json.Unmarshal([]byte(jsonShortL), &shortL)
 	if err != nil {
 		return MagicLink{}, errors.New("could not unmarshal short link")
 	}

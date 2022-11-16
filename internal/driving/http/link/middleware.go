@@ -7,9 +7,7 @@ import (
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
 )
 
-type ginMiddleware func(gtx *gin.Context)
-
-func validateMiddleware(linkService link.Service, linkParam string) func(gtx *gin.Context) {
+func ValidateMiddleware(linkService link.Service, linkParam string) func(gtx *gin.Context) {
 	return func(gtx *gin.Context) {
 		linkString := gtx.Param(linkParam)
 		magicLink, err := entities.NewMagicLinkFromString(linkString)

@@ -23,22 +23,38 @@ func NewController(service party.PartyService) Controller {
 	return controller{service: service}
 }
 
+// See
+// @Summary See a magiclink
+// @Description See the party behind the magiclink
+// @Param magic_link path string true "Link id"
+// @Success 200 {object} entities.Link
+// @Failure 400 {object} errorsext.RicardoError
+// @Failure 404 {object} errorsext.RicardoError
+// @Router /link/see/{magic_link} [GET]
 func (c controller) See(gtx *gin.Context) {
-	linkString := gtx.Param("link")
+	linkString := gtx.Param("magic_link")
 	// Already checked by middleware
 	magicLink, _ := entities.NewMagicLinkFromString(linkString)
 
 	party, err := c.service.Request(gtx.Request.Context(), magicLink.PartyID)
 	if err != nil {
 		// TODO: how to handle this ?
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, ""))
+		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, err.Error()))
 	}
 
 	gtx.JSON(http.StatusOK, party)
 }
 
+// Join
+// @Summary Join a party
+// @Description Join the party behind the magiclink
+// @Param magic_link path string true "Link id"
+// @Success 200 {object} entities.Link
+// @Failure 400 {object} errorsext.RicardoError
+// @Failure 404 {object} errorsext.RicardoError
+// @Router /link/join/{magic_link} [POST]
 func (c controller) Join(gtx *gin.Context) {
-	linkString := gtx.Param("link")
+	linkString := gtx.Param("magic_link")
 	// Already checked by middleware
 	magicLink, _ := entities.NewMagicLinkFromString(linkString)
 
@@ -47,7 +63,7 @@ func (c controller) Join(gtx *gin.Context) {
 	err := c.service.Joined(gtx.Request.Context(), magicLink.PartyID, uint(userID))
 	if err != nil {
 		// TODO: how to handle this ?
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, ""))
+		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, err.Error()))
 	}
 
 	gtx.Status(http.StatusOK)

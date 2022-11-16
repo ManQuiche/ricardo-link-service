@@ -49,6 +49,7 @@ func (p service) Save(ctx context.Context, link entities.Link) (*entities.Link, 
 
 	_, err = p.extlink.Create(ctx, magicLink.String(), l.ID)
 	if err != nil {
+		_ = p.repo.Delete(ctx, l.ID)
 		return nil, errors.New(fmt.Sprintf("could not create ext link %d: %s", link.ID, err))
 	}
 

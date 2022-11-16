@@ -25,6 +25,7 @@ func initRoutes() {
 	linkController := link.NewController(linkService, []byte(accessSecret))
 	partyController := party.NewController(partyService)
 	tokenMiddleware := tokens.NewJwtAuthMiddleware([]byte(accessSecret))
+	magicMiddleware := link.ValidateMiddleware(linkService, "magic_link")
 
 	linkGroup := router.Group("/link")
 	linkGroup.GET("", tokenMiddleware.Authorize, linkController.Get)
@@ -34,8 +35,8 @@ func initRoutes() {
 	linkGroup.PATCH("/:link_id", tokenMiddleware.Authorize, linkController.Update)
 	linkGroup.DELETE("/:link_id", tokenMiddleware.Authorize, linkController.Delete)
 
-	router.GET("/see/:link", partyController.See)
-	router.POST("/join/:link", tokenMiddleware.Authorize, partyController.Join)
+	router.GET("/see/:link", magicMiddleware, partyController.See)
+	router.POST("/join/:link", magicMiddleware, tokenMiddleware.Authorize, partyController.Join)
 }
 
 func ServeHTTP() {

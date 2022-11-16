@@ -20,10 +20,11 @@ type LinkService interface {
 type linkService struct {
 	client        *gorm.DB
 	fbLinkService *firebasedynamiclinks.Service
+	linkPrefix    string
 }
 
-func NewLinkService(client *gorm.DB, fbLinkService *firebasedynamiclinks.Service) LinkService {
-	return linkService{client, fbLinkService}
+func NewLinkService(client *gorm.DB, fbLinkService *firebasedynamiclinks.Service, linkPrefix string) LinkService {
+	return linkService{client, fbLinkService, linkPrefix}
 }
 
 func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (entities.ExternalLink, error) {
@@ -38,7 +39,7 @@ func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (e
 			//IosInfo: &firebasedynamiclinks.IosInfo{
 			//	IosFallbackLink: "https://www.google.com/" + linkStr + "/ios",
 			//},
-			Link: "https://www.google.com/" + linkStr,
+			Link: l.linkPrefix + linkStr,
 		},
 	})
 
