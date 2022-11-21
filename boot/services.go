@@ -30,7 +30,7 @@ func LoadServices() {
 	natsEncConn, err = nats.NewEncodedConn(natsConn, nats.JSON_ENCODER)
 
 	linkRepo := postgresql.NewInviteRepository(client)
-	extLinkRepo := firebase.NewLinkService(client, fbLinkService)
+	extLinkRepo := firebase.NewLinkService(client, fbLinkService, linkUrl+"/see")
 	linkService = link.NewService(linkRepo, extLinkRepo, extLinkURL, []byte(linkSecret))
 
 	partyNotifier := natsextout.NewPartyNotifier(natsEncConn, natsPartyRequested, natsPartyJoined)

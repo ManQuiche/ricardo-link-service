@@ -39,7 +39,7 @@ func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (e
 			//IosInfo: &firebasedynamiclinks.IosInfo{
 			//	IosFallbackLink: "https://www.google.com/" + linkStr + "/ios",
 			//},
-			Link: l.linkPrefix + linkStr,
+			Link: fmt.Sprintf("%s/%s", l.linkPrefix, linkStr),
 		},
 	})
 

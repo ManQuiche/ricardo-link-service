@@ -25,7 +25,7 @@ func initRoutes() {
 	linkController := link.NewController(linkService, []byte(accessSecret))
 	partyController := party.NewController(partyService)
 	tokenMiddleware := tokens.NewJwtAuthMiddleware([]byte(accessSecret))
-	magicMiddleware := link.ValidateMiddleware(linkService, "magic_link")
+	magicMiddleware := link.ValidateMiddleware(linkService, "link")
 
 	linkGroup := router.Group("/link")
 	linkGroup.GET("", tokenMiddleware.Authorize, linkController.Get)

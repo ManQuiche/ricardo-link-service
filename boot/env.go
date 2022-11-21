@@ -25,6 +25,7 @@ var (
 	natsPartyJoined    string
 
 	linkSecret string
+	linkUrl    string
 
 	firebaseKeyFile string
 )
@@ -48,6 +49,7 @@ func LoadEnv() {
 	natsPartyJoined = env("NATS_PARTY_JOINED")
 
 	linkSecret = env("LINK_SECRET")
+	linkUrl = env("LINK_URL")
 
 	firebaseKeyFile = env("FIREBASE_KEY_FILE")
 }
