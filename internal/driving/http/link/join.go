@@ -1,6 +1,11 @@
 package link
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	errorsext "gitlab.com/ricardo-public/errors/pkg/errors"
+)
+
+var _ errorsext.RicardoError
 
 // See
 // @Summary See a magiclink
