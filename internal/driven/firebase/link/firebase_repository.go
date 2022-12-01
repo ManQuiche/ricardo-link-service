@@ -35,7 +35,7 @@ func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (e
 			//	AndroidMinPackageVersionCode: "1.0",
 			//	AndroidPackageName:           "comm.ricardo.app",
 			//},
-			DomainUriPrefix: "https://ricardo.page.link/invite",
+			DomainUriPrefix: "https://ricardo.page.link",
 			//IosInfo: &firebasedynamiclinks.IosInfo{
 			//	IosFallbackLink: "https://www.google.com/" + linkStr + "/ios",
 			//},
