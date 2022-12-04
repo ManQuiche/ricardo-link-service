@@ -28,8 +28,7 @@ func NewLinkService(client *gorm.DB, fbLinkService *firebasedynamiclinks.Service
 }
 
 func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (entities.ExternalLink, error) {
-	// TODO: see with Grillz what do I need
-	call := l.fbLinkService.ShortLinks.Create(&firebasedynamiclinks.CreateShortDynamicLinkRequest{
+	req := firebasedynamiclinks.CreateShortDynamicLinkRequest{
 		DynamicLinkInfo: &firebasedynamiclinks.DynamicLinkInfo{
 			//AndroidInfo: &firebasedynamiclinks.AndroidInfo{
 			//	AndroidMinPackageVersionCode: "1.0",
@@ -39,9 +38,12 @@ func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (e
 			//IosInfo: &firebasedynamiclinks.IosInfo{
 			//	IosFallbackLink: "https://www.google.com/" + linkStr + "/ios",
 			//},
-			Link: fmt.Sprintf("%s/%s", l.linkPrefix, linkStr),
+			Link:            fmt.Sprintf("%s/%s", l.linkPrefix, linkStr),
+			ForceSendFields: []string{"DomainUriPrefix"},
 		},
-	})
+	}
+
+	call := l.fbLinkService.ShortLinks.Create(&req)
 
 	res, err := call.Do()
 	if err != nil {
