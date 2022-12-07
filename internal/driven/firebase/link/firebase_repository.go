@@ -28,8 +28,9 @@ func NewLinkService(client *gorm.DB, fbLinkService *firebasedynamiclinks.Service
 }
 
 func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (entities.ExternalLink, error) {
-	req := firebasedynamiclinks.CreateShortDynamicLinkRequest{
+	req := firebasedynamiclinks.CreateManagedShortLinkRequest{
 		DynamicLinkInfo: &firebasedynamiclinks.DynamicLinkInfo{
+
 			//AndroidInfo: &firebasedynamiclinks.AndroidInfo{
 			//	AndroidMinPackageVersionCode: "1.0",
 			//	AndroidPackageName:           "comm.ricardo.app",
@@ -38,12 +39,12 @@ func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (e
 			//IosInfo: &firebasedynamiclinks.IosInfo{
 			//	IosFallbackLink: "https://www.google.com/" + linkStr + "/ios",
 			//},
-			Link:            fmt.Sprintf("%s/%s", l.linkPrefix, linkStr),
-			ForceSendFields: []string{"DomainUriPrefix"},
+			Link: fmt.Sprintf("%s/%s", l.linkPrefix, linkStr),
 		},
+		Name: fmt.Sprintf("%s/%s", l.linkPrefix, linkStr),
 	}
 
-	call := l.fbLinkService.ShortLinks.Create(&req)
+	call := l.fbLinkService.ManagedShortLinks.Create(&req)
 
 	res, err := call.Do()
 	if err != nil {
@@ -52,7 +53,7 @@ func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (e
 	}
 
 	if res.HTTPStatusCode == http.StatusOK {
-		extlink := &entities.ExternalLink{Provider: provider, URL: res.ShortLink, LinkID: linkID}
+		extlink := &entities.ExternalLink{Provider: provider, URL: res.ManagedShortLink.Link, LinkID: linkID}
 		err = l.client.Create(extlink).Error
 		return *extlink, err
 	} else {
