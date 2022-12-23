@@ -122,3 +122,51 @@ func Test_MagicLink_FromString(t *testing.T) {
 
 	assert.Equal(t, wantM, fromLink)
 }
+
+func Test_MagicLink_Signature(t *testing.T) {
+	shortL := ShortLink{
+		ID:        2,
+		PartyID:   3,
+		CreatorID: 5,
+	}
+
+	sec := make([]byte, 20)
+	_, err := rand.Read(sec)
+	assert.Nil(t, err)
+
+	jsonL, err := json.Marshal(shortL)
+	assert.Nil(t, err)
+
+	magicLink, err := NewMagicLink(shortL, sec)
+	assert.Nil(t, err)
+
+	properLink := fmt.Sprintf(
+		"%s%s%s",
+		base64.URLEncoding.EncodeToString(jsonL),
+		magicLinkSep,
+		magicLink.Signature,
+	)
+
+	assert.Equal(t, magicLink.String(), properLink)
+
+}
+
+func Test_MagicLink_NewAndFromString(t *testing.T) {
+	shortL := ShortLink{
+		ID:        2,
+		PartyID:   3,
+		CreatorID: 5,
+	}
+
+	sec := make([]byte, 20)
+	_, err := rand.Read(sec)
+	assert.Nil(t, err)
+
+	magicLink, err := NewMagicLink(shortL, sec)
+	assert.Nil(t, err)
+
+	fromLink, err := NewMagicLinkFromString(magicLink.String())
+	assert.Nil(t, err)
+
+	assert.Equal(t, magicLink, fromLink)
+}

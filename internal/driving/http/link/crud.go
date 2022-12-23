@@ -37,7 +37,7 @@ func NewController(service link.Service, accessSecret []byte) Controller {
 // @Success 200 {object} entities.Link
 // @Failure 400 {object} errorsext.RicardoError
 // @Failure 404 {object} errorsext.RicardoError
-// @Router /link/{link_id} [POST]
+// @Router /link [POST]
 func (c controller) Create(gtx *gin.Context) {
 	var cir entities.CreateLinkRequest
 	err := gtx.ShouldBindJSON(&cir)
@@ -62,7 +62,7 @@ func (c controller) Create(gtx *gin.Context) {
 		return
 	}
 
-	gtx.JSON(http.StatusOK, magicLink)
+	gtx.JSON(http.StatusOK, magicLink.String())
 }
 
 // Update

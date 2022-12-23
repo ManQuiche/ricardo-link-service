@@ -20,6 +20,7 @@
 
 # IntelliJ project files
 .idea
+.fleet
 *.iml
 out
 gen
