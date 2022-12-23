@@ -3,7 +3,7 @@ package boot
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	tokens "gitlab.com/ricardo-public/jwt-tools/pkg"
+	tokens "gitlab.com/ricardo-public/jwt-tools/v2/pkg/token"
 	"gitlab.com/ricardo134/link-service/internal/driving/http/link"
 	"gitlab.com/ricardo134/link-service/internal/driving/http/party"
 	"log"

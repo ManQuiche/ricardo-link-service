@@ -2,14 +2,15 @@ package postgresql
 
 import (
 	"errors"
-	ricardoerr "gitlab.com/ricardo-public/errors/pkg/errors"
+	"fmt"
+	errorsext "gitlab.com/ricardo-public/errors/v2/pkg/errors"
 	"gorm.io/gorm"
 )
 
 func notFoundOrElseError(err error) error {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return ricardoerr.New(ricardoerr.ErrNotFound, "record not found")
+		return fmt.Errorf("postgresql: %s: %w", errorsext.ErrNotFound, err)
 	}
 
-	return ricardoerr.New(ricardoerr.ErrDatabaseError, err.Error())
+	return fmt.Errorf("postgresql: %s: %w", errorsext.ErrTimeout, err)
 }

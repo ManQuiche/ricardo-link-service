@@ -8,7 +8,7 @@ require (
 	github.com/nats-io/nats.go v1.17.0
 	github.com/stretchr/testify v1.8.1
 	gitlab.com/ricardo-public/errors v1.0.4
-	gitlab.com/ricardo-public/jwt-tools v1.1.3
+	gitlab.com/ricardo-public/errors/v2 v2.0.2
 	gitlab.com/ricardo-public/jwt-tools/v2 v2.2.3
 	google.golang.org/api v0.103.0
 	gorm.io/driver/postgres v1.3.10
@@ -24,7 +24,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.10.0 // indirect
 	github.com/goccy/go-json v0.9.7 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

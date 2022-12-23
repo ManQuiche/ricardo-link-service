@@ -2,8 +2,8 @@ package firebase
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	errorsext "gitlab.com/ricardo-public/errors/v2/pkg/errors"
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
 	"gitlab.com/ricardo134/link-service/internal/core/ports"
 	"google.golang.org/api/firebasedynamiclinks/v1"
@@ -49,7 +49,7 @@ func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (e
 	res, err := call.Do()
 	if err != nil {
 		return entities.ExternalLink{},
-			errors.New(fmt.Sprintf("firebase dynamic link creation: %s", err))
+			fmt.Errorf("firebase create: %s: %w", err, errorsext.ErrInternal)
 	}
 
 	if res.HTTPStatusCode == http.StatusOK {
@@ -58,7 +58,7 @@ func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (e
 		return *extlink, err
 	} else {
 		return entities.ExternalLink{},
-			errors.New(fmt.Sprintf("firebase dynamic link creation: %s", err))
+			fmt.Errorf("firebase create: %s: %w", err, errorsext.ErrBadRequest)
 	}
 }
 

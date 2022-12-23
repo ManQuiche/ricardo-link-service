@@ -1,8 +1,9 @@
 package party
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
-	errorsext "gitlab.com/ricardo-public/errors/pkg/errors"
+	errorsext "gitlab.com/ricardo-public/errors/v2/pkg/errors"
 	"gitlab.com/ricardo-public/jwt-tools/v2/pkg/token"
 	"gitlab.com/ricardo134/link-service/internal/core/app/party"
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
@@ -37,8 +38,8 @@ func (c controller) See(gtx *gin.Context) {
 
 	party, err := c.service.Request(gtx.Request.Context(), magicLink.PartyID)
 	if err != nil {
-		// TODO: how to handle this ?
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, err.Error()))
+		_ = errorsext.GinErrorHandler(gtx, fmt.Errorf("%s: %w", err, errorsext.ErrBadRequest))
+		return
 	}
 
 	gtx.JSON(http.StatusOK, party)
@@ -61,8 +62,8 @@ func (c controller) Join(gtx *gin.Context) {
 
 	err := c.service.Joined(gtx.Request.Context(), magicLink.PartyID, uint(userID))
 	if err != nil {
-		// TODO: how to handle this ?
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, err.Error()))
+		_ = errorsext.GinErrorHandler(gtx, fmt.Errorf("%s: %w", err, errorsext.ErrBadRequest))
+		return
 	}
 
 	gtx.Status(http.StatusOK)

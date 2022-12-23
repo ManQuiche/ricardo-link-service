@@ -1,10 +1,10 @@
 package link
 
 import (
-	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
-	errorsext "gitlab.com/ricardo-public/errors/pkg/errors"
-	tokens "gitlab.com/ricardo-public/jwt-tools/pkg"
+	errorsext "gitlab.com/ricardo-public/errors/v2/pkg/errors"
+	tokens "gitlab.com/ricardo-public/jwt-tools/v2/pkg/token"
 	"gitlab.com/ricardo134/link-service/internal/core/app/link"
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
 	"net/http"
@@ -42,7 +42,7 @@ func (c controller) Create(gtx *gin.Context) {
 	var cir entities.CreateLinkRequest
 	err := gtx.ShouldBindJSON(&cir)
 	if err != nil {
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, err.Error()))
+		_ = errorsext.GinErrorHandler(gtx, fmt.Errorf("update: %s: %w", err, errorsext.ErrBadRequest))
 		return
 	}
 
@@ -50,13 +50,13 @@ func (c controller) Create(gtx *gin.Context) {
 		PartyID:    cir.PartyID,
 		Expiration: cir.Expiration,
 	}
-	link, err := c.service.Save(gtx.Request.Context(), i)
+	sLink, err := c.service.Save(gtx.Request.Context(), i)
 	if err != nil {
 		_ = errorsext.GinErrorHandler(gtx, err)
 		return
 	}
 
-	magicLink, err := c.service.ToMagic(gtx.Request.Context(), *link)
+	magicLink, err := c.service.ToMagic(gtx.Request.Context(), *sLink)
 	if err != nil {
 		_ = errorsext.GinErrorHandler(gtx, err)
 		return
@@ -77,7 +77,7 @@ func (c controller) Create(gtx *gin.Context) {
 func (c controller) Update(gtx *gin.Context) {
 	linkID, err := strconv.ParseUint(gtx.Param("link_id"), 10, 64)
 	if err != nil {
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, "invalid ID format"))
+		_ = errorsext.GinErrorHandler(gtx, fmt.Errorf("update: %s: %w", "invalid ID format", errorsext.ErrBadRequest))
 		return
 	}
 	uintLinkId := uint(linkID)
@@ -85,7 +85,7 @@ func (c controller) Update(gtx *gin.Context) {
 	var ulr entities.UpdateLinkRequest
 	err = gtx.ShouldBindJSON(&ulr)
 	if err != nil {
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, ""))
+		_ = errorsext.GinErrorHandler(gtx, fmt.Errorf("update: %s: %w", err, errorsext.ErrBadRequest))
 		return
 	}
 
@@ -96,19 +96,19 @@ func (c controller) Update(gtx *gin.Context) {
 
 	l, err := c.service.Get(gtx.Request.Context(), uint(linkID))
 	if err != nil {
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, ""))
+		_ = errorsext.GinErrorHandler(gtx, err)
 		return
 	}
 
 	l.Expiration = ulr.Expiration
 
-	link, err := c.service.Save(gtx.Request.Context(), *l)
+	sLink, err := c.service.Save(gtx.Request.Context(), *l)
 	if err != nil {
 		_ = errorsext.GinErrorHandler(gtx, err)
 		return
 	}
 
-	gtx.JSON(http.StatusOK, link)
+	gtx.JSON(http.StatusOK, sLink)
 }
 
 // Get
@@ -121,7 +121,7 @@ func (c controller) Update(gtx *gin.Context) {
 func (c controller) Get(gtx *gin.Context) {
 	links, err := c.service.GetAll(gtx.Request.Context())
 	if err != nil {
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, ""))
+		_ = errorsext.GinErrorHandler(gtx, err)
 		return
 	}
 
@@ -139,7 +139,8 @@ func (c controller) Get(gtx *gin.Context) {
 func (c controller) GetAllForParty(gtx *gin.Context) {
 	partyID, err := strconv.ParseUint(gtx.Param("party_id"), 10, 64)
 	if err != nil {
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, err.Error()))
+		_ = errorsext.GinErrorHandler(gtx, fmt.Errorf("GetAllForParty: %s: %w", "invalid ID format", errorsext.ErrBadRequest))
+		return
 	}
 
 	links, err := c.service.GetAllForParty(gtx.Request.Context(), uint(partyID))
@@ -162,7 +163,7 @@ func (c controller) GetAllForParty(gtx *gin.Context) {
 func (c controller) GetOne(gtx *gin.Context) {
 	linkId, err := strconv.ParseUint(gtx.Param("link_id"), 10, 64)
 	if err != nil {
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, ""))
+		_ = errorsext.GinErrorHandler(gtx, fmt.Errorf("GetOne: %s: %w", "invalid ID format", errorsext.ErrBadRequest))
 		return
 	}
 
@@ -186,7 +187,7 @@ func (c controller) GetOne(gtx *gin.Context) {
 func (c controller) Delete(gtx *gin.Context) {
 	linkID, err := strconv.ParseUint(gtx.Param("link_id"), 10, 64)
 	if err != nil {
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, "invalid ID format"))
+		_ = errorsext.GinErrorHandler(gtx, fmt.Errorf("Delete: %s: %w", "invalid ID format", errorsext.ErrBadRequest))
 		return
 	}
 	uintLinkId := uint(linkID)
@@ -208,12 +209,13 @@ func (c controller) Delete(gtx *gin.Context) {
 func (c controller) canUpdateOrDelete(gtx *gin.Context, linkID uint) (bool, error) {
 	l, err := c.service.Get(gtx.Request.Context(), linkID)
 	if err != nil {
-		_ = errorsext.GinErrorHandler(gtx, errorsext.New(errorsext.ErrBadRequest, ""))
+		_ = errorsext.GinErrorHandler(gtx, err)
 		return false, err
 	}
 
 	strToken, err := tokens.ExtractTokenFromHeader(gtx.GetHeader(tokens.AuthorizationHeader))
 	if err != nil {
+		err = fmt.Errorf("%s: %w", err, errorsext.ErrBadRequest)
 		_ = errorsext.GinErrorHandler(gtx, err)
 		return false, err
 	}
@@ -222,8 +224,8 @@ func (c controller) canUpdateOrDelete(gtx *gin.Context, linkID uint) (bool, erro
 	claims := pToken.Claims.(tokens.RicardoClaims)
 	userID, err := strconv.ParseUint(claims.Subject, 10, 64)
 
-	if uint(userID) != l.CreatorID && claims.Role != tokens.AdminRole {
-		err = errors.New("unauthorized to update or delete")
+	if uint(userID) != l.CreatorID && tokens.IsAdmin(claims) {
+		err = fmt.Errorf("%s: %w", "cannot update or delete", errorsext.ErrForbidden)
 		_ = errorsext.GinErrorHandler(gtx, err)
 		return false, err
 	}

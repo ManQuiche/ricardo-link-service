@@ -2,7 +2,6 @@ package link
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
 	"gitlab.com/ricardo134/link-service/internal/core/ports"
@@ -41,7 +40,7 @@ func (p service) ToMagic(ctx context.Context, link entities.Link) (*entities.Mag
 
 	magicLink, err := entities.NewMagicLink(shortL, p.secret)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("toMagic: %s", err))
+		return nil, fmt.Errorf("ToMagic: %w", err)
 	}
 
 	return &magicLink, nil
