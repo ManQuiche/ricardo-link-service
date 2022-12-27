@@ -54,7 +54,7 @@ func (c controller) See(gtx *gin.Context) {
 // @Failure 404 {object} errorsext.RicardoError
 // @Router /link/join/{magic_link} [POST]
 func (c controller) Join(gtx *gin.Context) {
-	linkString := gtx.Param("magic_link")
+	linkString := gtx.Param("link")
 	// Already checked by middleware
 	magicLink, _ := entities.NewMagicLinkFromString(linkString)
 
