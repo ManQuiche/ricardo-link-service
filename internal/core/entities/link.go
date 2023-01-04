@@ -75,7 +75,7 @@ func NewMagicLinkFromString(magicL string) (MagicLink, error) {
 	}
 
 	var shortL ShortLink
-	err = json.Unmarshal([]byte(jsonShortL), &shortL)
+	err = json.Unmarshal(jsonShortL, &shortL)
 	if err != nil {
 		return MagicLink{}, errors.New("could not unmarshal short link")
 	}
