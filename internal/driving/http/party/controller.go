@@ -8,7 +8,6 @@ import (
 	"gitlab.com/ricardo134/link-service/internal/core/app/party"
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
 	"net/http"
-	"strconv"
 )
 
 type Controller interface {
@@ -58,7 +57,8 @@ func (c controller) Join(gtx *gin.Context) {
 	// Already checked by middleware
 	magicLink, _ := entities.NewMagicLinkFromString(linkString)
 
-	userID, _ := strconv.Atoi(gtx.Param(token.UserIDKey))
+	anyUserID, _ := gtx.Get(token.UserIDKey)
+	userID := anyUserID.(uint)
 
 	err := c.service.Joined(gtx.Request.Context(), magicLink.PartyID, uint(userID))
 	if err != nil {
