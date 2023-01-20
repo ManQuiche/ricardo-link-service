@@ -10,6 +10,7 @@ require (
 	gitlab.com/ricardo-public/errors v1.0.4
 	gitlab.com/ricardo-public/errors/v2 v2.0.2
 	gitlab.com/ricardo-public/jwt-tools/v2 v2.2.3
+	gitlab.com/ricardo-public/tracing v0.7.0
 	google.golang.org/api v0.103.0
 	gorm.io/driver/postgres v1.3.10
 	gorm.io/gorm v1.23.10

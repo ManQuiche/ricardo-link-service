@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	tokens "gitlab.com/ricardo-public/jwt-tools/v2/pkg/token"
+	gintracing "gitlab.com/ricardo-public/tracing/pkg/gin"
 	"gitlab.com/ricardo134/link-service/internal/driving/http/link"
 	"gitlab.com/ricardo134/link-service/internal/driving/http/party"
 	"log"
@@ -17,6 +18,8 @@ var (
 )
 
 func initRoutes() {
+	router.Use(gintracing.TraceRequest)
+
 	// Ready route
 	router.GET("/", func(context *gin.Context) {
 		context.Status(http.StatusOK)
