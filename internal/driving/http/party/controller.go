@@ -35,13 +35,13 @@ func (c controller) See(gtx *gin.Context) {
 	// Already checked by middleware
 	magicLink, _ := entities.NewMagicLinkFromString(linkString)
 
-	party, err := c.service.Request(gtx.Request.Context(), magicLink.PartyID)
+	partyReq, err := c.service.Request(gtx.Request.Context(), magicLink.PartyID)
 	if err != nil {
 		_ = errorsext.GinErrorHandler(gtx, fmt.Errorf("%s: %w", err, errorsext.ErrBadRequest))
 		return
 	}
 
-	gtx.JSON(http.StatusOK, party)
+	gtx.JSON(http.StatusOK, partyReq)
 }
 
 // Join
