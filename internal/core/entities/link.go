@@ -98,19 +98,6 @@ func (m MagicLink) IsValid(secret []byte) (bool, error) {
 	return base64.URLEncoding.EncodeToString(digest[:]) == m.Signature, nil
 }
 
-//func (m MagicLink) MarshalJSON() ([]byte, error) {
-//	jsonL, err := json.Marshal(m.ShortLink)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return append(jsonL, []byte(m.MagicLink)...), nil
-//}
-//
-//func (m MagicLink) UnmarshalJSON(bytes []byte) error {
-//
-//}
-
 type CreateLinkRequest struct {
 	PartyID    uint       `json:"party_id" binding:"required"`
 	Expiration *time.Time `json:"expiration,omitempty"`
