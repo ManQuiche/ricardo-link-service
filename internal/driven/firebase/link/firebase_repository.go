@@ -2,8 +2,8 @@ package firebase
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	errorsext "gitlab.com/ricardo-public/errors/v2/pkg/errors"
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
 	"gitlab.com/ricardo134/link-service/internal/core/ports"
 	"google.golang.org/api/firebasedynamiclinks/v1"
@@ -28,9 +28,9 @@ func NewLinkService(client *gorm.DB, fbLinkService *firebasedynamiclinks.Service
 }
 
 func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (entities.ExternalLink, error) {
-	// TODO: see with Grillz what do I need
-	call := l.fbLinkService.ShortLinks.Create(&firebasedynamiclinks.CreateShortDynamicLinkRequest{
+	req := firebasedynamiclinks.CreateManagedShortLinkRequest{
 		DynamicLinkInfo: &firebasedynamiclinks.DynamicLinkInfo{
+
 			//AndroidInfo: &firebasedynamiclinks.AndroidInfo{
 			//	AndroidMinPackageVersionCode: "1.0",
 			//	AndroidPackageName:           "comm.ricardo.app",
@@ -41,21 +41,24 @@ func (l linkService) Create(ctx context.Context, linkStr string, linkID uint) (e
 			//},
 			Link: fmt.Sprintf("%s/%s", l.linkPrefix, linkStr),
 		},
-	})
+		Name: fmt.Sprintf("%s/%s", l.linkPrefix, linkStr),
+	}
+
+	call := l.fbLinkService.ManagedShortLinks.Create(&req)
 
 	res, err := call.Do()
 	if err != nil {
 		return entities.ExternalLink{},
-			errors.New(fmt.Sprintf("firebase dynamic link creation: %s", err))
+			fmt.Errorf("firebase create: %s: %w", err, errorsext.ErrInternal)
 	}
 
 	if res.HTTPStatusCode == http.StatusOK {
-		extlink := &entities.ExternalLink{Provider: provider, URL: res.ShortLink, LinkID: linkID}
+		extlink := &entities.ExternalLink{Provider: provider, URL: res.ManagedShortLink.Link, LinkID: linkID}
 		err = l.client.Create(extlink).Error
 		return *extlink, err
 	} else {
 		return entities.ExternalLink{},
-			errors.New(fmt.Sprintf("firebase dynamic link creation: %s", err))
+			fmt.Errorf("firebase create: %s: %w", err, errorsext.ErrBadRequest)
 	}
 }
 

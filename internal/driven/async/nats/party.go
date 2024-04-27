@@ -24,9 +24,23 @@ func (p partyNotifier) Requested(ctx context.Context, partyID uint) (any, error)
 		return nil, err
 	}
 
+	if err, ok := party.(error); ok {
+		return nil, err
+	}
+
 	return party, nil
 }
 
 func (p partyNotifier) Joined(ctx context.Context, partyID uint, userID uint) error {
-	return p.conn.Publish(p.joinedTopic, entities.JoinInfo{PartyID: partyID, UserID: userID})
+	var processError error
+	err := p.conn.Request(p.joinedTopic, entities.JoinInfo{PartyID: partyID, UserID: userID}, &processError, nats.DefaultTimeout*2)
+	if err != nil {
+		return err
+	}
+
+	if processError != nil {
+		return processError
+	}
+
+	return nil
 }

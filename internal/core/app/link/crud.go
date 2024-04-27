@@ -2,7 +2,6 @@ package link
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"gitlab.com/ricardo134/link-service/internal/core/entities"
 )
@@ -39,18 +38,18 @@ func (p service) GetAllForParty(ctx context.Context, partyID uint) ([]entities.L
 func (p service) Save(ctx context.Context, link entities.Link) (*entities.Link, error) {
 	l, err := p.repo.Save(ctx, link)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("could not save link %d: %s", link.ID, err))
+		return nil, fmt.Errorf("link save: could not save link %d: %w", link.ID, err)
 	}
 
 	magicLink, err := p.ToMagic(ctx, link)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("could not convert to magic %d: %s", link.ID, err))
+		return nil, fmt.Errorf("link save: could not convert to magic %d: %w", link.ID, err)
 	}
 
 	_, err = p.extlink.Create(ctx, magicLink.String(), l.ID)
 	if err != nil {
 		_ = p.repo.Delete(ctx, l.ID)
-		return nil, errors.New(fmt.Sprintf("could not create ext link %d: %s", link.ID, err))
+		return nil, fmt.Errorf("link save: could not create ext link %d: %w", link.ID, err)
 	}
 
 	return l, nil

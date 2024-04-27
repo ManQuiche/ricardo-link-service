@@ -75,7 +75,7 @@ func NewMagicLinkFromString(magicL string) (MagicLink, error) {
 	}
 
 	var shortL ShortLink
-	err = json.Unmarshal([]byte(jsonShortL), &shortL)
+	err = json.Unmarshal(jsonShortL, &shortL)
 	if err != nil {
 		return MagicLink{}, errors.New("could not unmarshal short link")
 	}
@@ -97,19 +97,6 @@ func (m MagicLink) IsValid(secret []byte) (bool, error) {
 
 	return base64.URLEncoding.EncodeToString(digest[:]) == m.Signature, nil
 }
-
-//func (m MagicLink) MarshalJSON() ([]byte, error) {
-//	jsonL, err := json.Marshal(m.ShortLink)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return append(jsonL, []byte(m.MagicLink)...), nil
-//}
-//
-//func (m MagicLink) UnmarshalJSON(bytes []byte) error {
-//
-//}
 
 type CreateLinkRequest struct {
 	PartyID    uint       `json:"party_id" binding:"required"`
